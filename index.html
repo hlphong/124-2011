@@ -76,6 +76,109 @@
         .animate-shake {
             animation: shake 0.5s ease-in-out;
         }
+
+        /* ========================================================
+           CSS CHO SLIDE NHIỀU ẢNH LẦN LƯỢT ĐÈ LÊN NHAU
+        ======================================================== */
+        .photo-stack-viewport {
+            position: relative;
+            width: 100%;
+            max-width: 340px;
+            aspect-ratio: 4 / 3;
+            margin: 0 auto;
+            perspective: 1200px;
+            touch-action: pan-y;
+            user-select: none;
+        }
+
+        .photo-stack-card {
+            position: absolute;
+            inset: 0;
+            border-radius: 16px;
+            overflow: hidden;
+            background-color: #ffffff;
+            border: 4px solid #fde68a;
+            box-shadow: 0 14px 28px -8px rgba(74, 4, 13, 0.35), 0 6px 12px -4px rgba(0, 0, 0, 0.2);
+            transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+                        opacity 0.55s ease,
+                        box-shadow 0.55s ease,
+                        filter 0.55s ease;
+            will-change: transform, opacity;
+            cursor: grab;
+        }
+
+        .photo-stack-card:active {
+            cursor: grabbing;
+        }
+
+        .photo-stack-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none;
+            display: block;
+        }
+
+        /* Lớp phủ gradient nhẹ ở đáy ảnh để chữ cảm xúc nổi bật, dễ đọc */
+        .photo-emotion-overlay {
+            position: absolute;
+            inset: auto 0 0 0;
+            padding: 28px 14px 12px;
+            background: linear-gradient(to top, rgba(45, 2, 8, 0.85) 0%, rgba(45, 2, 8, 0.45) 60%, transparent 100%);
+            color: #fef3c7;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        /* Trạng thái các thẻ ảnh xếp chồng */
+        .photo-stack-card.is-active {
+            z-index: 30;
+            opacity: 1;
+            transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+            filter: brightness(1);
+        }
+
+        /* Ảnh mới chuẩn bị trượt đè lên trên từ bên phải */
+        .photo-stack-card.is-incoming {
+            z-index: 40;
+            opacity: 0;
+            transform: translate3d(115%, -14px, 40px) scale(1.04) rotate(5deg);
+            pointer-events: none;
+        }
+
+        /* Ảnh mới chuẩn bị trượt đè lên trên từ bên trái */
+        .photo-stack-card.is-incoming-left {
+            z-index: 40;
+            opacity: 0;
+            transform: translate3d(-115%, -14px, 40px) scale(1.04) rotate(-5deg);
+            pointer-events: none;
+        }
+
+        /* Ảnh ngay phía sau (lớp 2) */
+        .photo-stack-card.is-next-1 {
+            z-index: 20;
+            opacity: 0.92;
+            transform: translate3d(14px, 8px, -30px) scale(0.95) rotate(2.5deg);
+            filter: brightness(0.88);
+            cursor: pointer;
+        }
+
+        /* Ảnh lớp 3 */
+        .photo-stack-card.is-next-2 {
+            z-index: 10;
+            opacity: 0.75;
+            transform: translate3d(26px, 15px, -60px) scale(0.90) rotate(5deg);
+            filter: brightness(0.76);
+            cursor: pointer;
+        }
+
+        /* Các ảnh còn lại ẩn gọn dưới đáy xấp */
+        .photo-stack-card.is-hidden {
+            z-index: 1;
+            opacity: 0;
+            transform: translate3d(34px, 20px, -90px) scale(0.86) rotate(6deg);
+            pointer-events: none;
+        }
     </style>
 </head>
 <body class="bg-wine min-h-screen text-slate-800 flex items-center justify-center p-3 sm:p-6 select-none overflow-x-hidden font-sans">
@@ -93,7 +196,7 @@
     </div>
 
     <!-- Container chính trình chiếu các Slide -->
-    <div class="relative w-full max-w-xl aspect-[4/5] sm:aspect-[4/3] min-h-[540px] flex items-center justify-center">
+    <div class="relative w-full max-w-xl aspect-[4/5] sm:aspect-[4/3] min-h-[560px] flex items-center justify-center">
 
         <!-- SLIDE 1: TRANG BÌA THƯ -->
         <div id="slide1" class="absolute inset-0 flex flex-col items-center justify-center transition-all duration-700 ease-in-out opacity-100 z-10">
@@ -115,14 +218,7 @@
 
                 <p class="text-xs text-rose-800 font-medium mt-1 z-10">Chào mừng Ngày Nhà giáo Việt Nam 20/11</p>
             </div>
-			<br>
-			<br>
-			<br>
-			<br>
-			<br>
-			<br>
-			<br>
-			<p style='color:white'>made by @class 12/4</p>
+            <p class="text-white/80 text-xs mt-12 tracking-wider">made by @class 12/4</p>
         </div>
 
         <!-- SLIDE 2: CHỌN CẢM XÚC -->
@@ -164,7 +260,7 @@
             </div>
         </div>
 
-        <!-- SLIDE 4: LỜI CẢM ƠN TỪ LỚP 12/4 -->
+        <!-- SLIDE 4 (ID: slide5): LỜI CẢM ƠN TỪ LỚP 12/4 -->
         <div id="slide5" class="absolute inset-0 flex flex-col items-center justify-center transition-all duration-700 ease-in-out opacity-0 pointer-events-none z-0">
             <div class="bg-cream border-4 border-amber-200/60 w-full max-w-lg rounded-2xl p-4 sm:p-6 shadow-2xl relative overflow-hidden flex flex-col items-center text-center">
                 <div class="text-2xl mb-1">💐</div>
@@ -179,16 +275,16 @@
                         <img src="https://raw.githubusercontent.com/hlphong/124-2011/refs/heads/main/IMG_1014.jpeg" alt="Kỷ niệm Lớp 12/4 & Cô Hải" class="w-full h-full object-cover rounded-lg block" onerror="this.onerror=null; this.src='https://placehold.co/1284x963/fdfbf7/8b0000?text=K%E1%BB%B7+Ni%E1%BB%87m+L%E1%BB%9Bp+12%2F4+%26+C%C3%B4+H%E1%BA%A3i';">
                     </a>
                 </div>
-				<div class="font-letter text-stone-700 text-base leading-relaxed space-y-1.5 px-1 mb-3 max-h-36 overflow-y-auto text-justify">
+                <div class="font-letter text-stone-700 text-base leading-relaxed space-y-1.5 px-1 mb-3 max-h-36 overflow-y-auto text-justify">
                     <p><b>
                         Cảm ơn cô – người đã lặng lẽ trong chương cuối của 1000 ngày nắng về thanh xuân 12/4. Cô dạy chúng em những định luật của vật lý, những chuyển động của thế giới tự nhiên, nhưng hơn thế, cô còn dạy chúng em cách tìm thấy ánh sáng giữa những ngày chông chênh, cách giữ thăng bằng trước những đổi thay của cuộc sống.
-                    </p></b>
+                    </b></p>
                     <p><b>
                         Cô đã trao chúng em sự tận tâm, bao dung và những yêu thương chẳng cần gọi thành tên. Cảm ơn cô vì bao dung những vụng dại tuổi học trò, và xin lỗi vì đôi lần ngỗ nghịch, chúng em vô tâm đã khiến cô phải buồn lòng.
-                    </p></b>
+                    </b></p>
                     <p><b>
                         Nhưng có lẽ, điều đẹp đẽ nhất của nghề giáo không chỉ là trao đi tri thức, mà còn để lại trong lòng học trò những miền ký ức dịu dàng. Dẫu bánh xe thời gian cứ trôi mãi... nhưng những năm tháng cùng cô sẽ luôn hiện diện trong tâm trí 12/4 chúng em.
-                    </p></b>
+                    </b></p>
                 </div>
 
                 <!-- Điều hướng slide -->
@@ -203,7 +299,7 @@
             </div>
         </div>
 
-        <!-- SLIDE 5: LỜI CHÚC TƯƠNG LAI CÔ HẢI -->
+        <!-- SLIDE 5 (ID: slide6): LỜI CHÚC TƯƠNG LAI CÔ HẢI -->
         <div id="slide6" class="absolute inset-0 flex flex-col items-center justify-center transition-all duration-700 ease-in-out opacity-0 pointer-events-none z-0">
             <div class="bg-cream border-4 border-amber-200/60 w-full max-w-lg rounded-2xl p-4 sm:p-6 shadow-2xl relative overflow-hidden flex flex-col items-center text-center">
                 <div class="text-2xl mb-1">🌟</div>
@@ -221,13 +317,13 @@
                 <div class="font-letter text-stone-700 text-base leading-relaxed space-y-1.5 px-1 mb-3 max-h-36 overflow-y-auto text-justify">
                     <p><b>
                         Tháng Mười Một về, những món quà xa hoa cũng chẳng thể thay thế những lời chúc chân thành và thương mến nhất đến "Người vững tay chèo".
-                    </p></b>
+                    </b></p>
                     <p><b>
                         Chúc cô sẽ luôn rạng rỡ như ánh bình minh, bình an như hoa vàng trên miền đất xanh, mãi giữ trong tim ngọn lửa nhiệt thành với nghề và niềm say mê với những trang giáo án.
-                    </p></b>
+                    </b></p>
                     <p><b>
                         Mong rằng trên hành trình gieo hạt tri thức, cô sẽ luôn nhận lại thật nhiều mùa hoa hạnh phúc; để mỗi chuyến đò cập bến đều là một lần thanh xuân được nở hoa. Chúc cô một đời an nhiên, vạn điều như ý!
-                    </p></b>
+                    </b></p>
                 </div>
 
                 <!-- Điều hướng slide -->
@@ -235,14 +331,47 @@
                     <button onclick="goToSlide(5)" class="px-5 py-2 border border-rose-900/30 text-rose-900 hover:bg-rose-50 font-letter text-base font-semibold rounded-full shadow-sm transition-all duration-300 transform hover:scale-105 active:scale-95">
                         ⬅️ Trở về
                     </button>
-                    <button onclick="goToSlide(7)" class="px-6 py-2 bg-waxRed hover:bg-red-900 text-amber-100 font-letter text-base font-semibold rounded-full shadow-md transition-all duration-300 transform hover:scale-105 active:scale-95">
-                        Tiếp theo ➡️
+                    <button onclick="goToSlide(8)" class="px-6 py-2 bg-waxRed hover:bg-red-900 text-amber-100 font-letter text-base font-semibold rounded-full shadow-md transition-all duration-300 transform hover:scale-105 active:scale-95">
+                        Album Kỷ Niệm 📸
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- SLIDE 6: SLIDE KẾT TÌNH CẢM LỚP 12/4 -->
+        <!-- SLIDE ALBUM ẢNH XẾP CHỒNG ĐÈ LÊN NHAU (ID: slide8) -->
+        <div id="slide8" class="absolute inset-0 flex flex-col items-center justify-center transition-all duration-700 ease-in-out opacity-0 pointer-events-none z-0">
+            <div class="bg-cream border-4 border-amber-200/60 w-full max-w-lg rounded-2xl p-4 sm:p-6 shadow-2xl relative flex flex-col items-center text-center">
+                <div class="text-2xl mb-0.5">📸</div>
+                <h2 class="font-handwriting text-2xl sm:text-3xl text-rose-900 font-bold mb-0.5">
+                    Khoảnh Khắc Thanh Xuân 12/4
+                </h2>
+                <p class="font-letter text-xs sm:text-sm text-stone-600 italic mb-3">
+                    Vuốt hoặc chạm vào tấm ảnh phía sau để lật từng trang ký ức
+                </p>
+
+                <!-- Khung chứa các tấm ảnh xếp chồng đè lên nhau -->
+                <div class="w-full pr-6 pb-4">
+                    <div id="photoStackViewport" class="photo-stack-viewport">
+                        <!-- Các thẻ ảnh sẽ được render bằng JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Chỉ báo chấm tròn -->
+                <div id="stackDots" class="flex items-center justify-center gap-1.5 mt-2 mb-3"></div>
+
+                <!-- Điều hướng sang Slide tiếp theo / Quay lại -->
+                <div class="flex items-center gap-3 pt-2 border-t border-amber-200/60 w-full justify-center">
+                    <button onclick="goToSlide(6)" class="px-5 py-1.5 border border-rose-900/30 text-rose-900 hover:bg-rose-50 font-letter text-base font-semibold rounded-full shadow-sm transition-all duration-300 transform hover:scale-105 active:scale-95">
+                        ⬅️ Trở về
+                    </button>
+                    <button onclick="goToSlide(7)" class="px-6 py-1.5 bg-waxRed hover:bg-red-900 text-amber-100 font-letter text-base font-semibold rounded-full shadow-md transition-all duration-300 transform hover:scale-105 active:scale-95">
+                        Lời Kết 💌
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE KẾT TÌNH CẢM LỚP 12/4 (ID: slide7) -->
         <div id="slide7" class="absolute inset-0 flex flex-col items-center justify-center transition-all duration-700 ease-in-out opacity-0 pointer-events-none z-0">
             <div class="bg-cream border-4 border-amber-200/60 w-full max-w-lg rounded-2xl p-6 sm:p-10 shadow-2xl relative overflow-hidden flex flex-col items-center text-center">
                 <div class="text-4xl sm:text-5xl mb-3">💌</div>
@@ -255,8 +384,11 @@
 
                 <div class="w-16 h-0.5 bg-amber-400/60 my-4"></div>
 
-                <!-- Nút phát lại -->
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+                <!-- Nút điều hướng & phát lại -->
+                <div class="flex flex-wrap items-center justify-center gap-3">
+                    <button onclick="goToSlide(8)" class="px-5 py-2.5 border border-rose-900/30 text-rose-900 hover:bg-rose-50 font-letter text-base font-semibold rounded-full shadow-sm transition-all duration-300 transform hover:scale-105 active:scale-95">
+                        ⬅️ Xem lại ảnh
+                    </button>
                     <button onclick="goToSlide(1)" class="px-6 py-2.5 bg-waxRed hover:bg-red-900 text-amber-100 font-letter text-base font-semibold rounded-full shadow-md transition-all duration-300 transform hover:scale-105 active:scale-95 flex items-center gap-2">
                         <i class="fa-solid fa-rotate-right"></i> Xem lại từ đầu
                     </button>
@@ -270,14 +402,217 @@
         let currentSlide = 1;
         let isPlaying = false;
 
-        // Chuyển slide mượt mà
+        // ========================================================
+        // DỮ LIỆU 8 ẢNH XẾP CHỒNG KÈM LỜI CẢM XÚC
+        // ========================================================
+        const albumPhotos = [
+            {
+                src: "https://raw.githubusercontent.com/hlphong/124-2011/refs/heads/main/IMG_1014.jpeg",
+                emotion: "Tập thể 12/4 bên Cô Hải – Dấu ấn thanh xuân rạng rỡ 🌸"
+            },
+            {
+                src: "https://raw.githubusercontent.com/hlphong/124-2011/refs/heads/main/IMG_1015.jpeg",
+                emotion: "Nụ cười của Cô là nắng ấm sưởi trọn tháng năm học trò ☀️"
+            },
+            {
+                src: "https://raw.githubusercontent.com/hlphong/124-2011/refs/heads/main/IMG_1068.jpeg",
+                emotion: "Những phút giây hồn nhiên, vô tư bên mái trường thân yêu ✨"
+            },
+            {
+                src: "https://raw.githubusercontent.com/hlphong/124-2011/refs/heads/main/IMG_1069.jpeg",
+                emotion: "Thương lắm ánh mắt dịu hiền và sự bao dung vô bờ của Cô 💗"
+            },
+            {
+                src: "https://raw.githubusercontent.com/hlphong/124-2011/refs/heads/main/IMG_1071.jpeg",
+                emotion: "1000 ngày thanh xuân – Mỗi khoảnh khắc đều hóa ký ức đẹp 🌿"
+            },
+            {
+                src: "https://raw.githubusercontent.com/hlphong/124-2011/refs/heads/main/IMG_1070.jpeg",
+                emotion: "Cảm ơn Cô đã lặng lẽ dìu dắt chúng em qua từng chặng đường 💐"
+            },
+            {
+                src: "https://raw.githubusercontent.com/hlphong/124-2011/refs/heads/main/IMG_1072.jpeg",
+                emotion: "Gửi trọn yêu thương và lòng biết ơn sâu sắc nhất đến Cô 🌷"
+            },
+            {
+                src: "https://raw.githubusercontent.com/hlphong/124-2011/refs/heads/main/IMG_1074.jpeg",
+                emotion: "Mãi tự hào vì được là học trò của Cô Hải – Gia đình 12/4 ❤️"
+            }
+        ];
+
+        let photoIndex = 0;
+        let isPhotoAnimating = false;
+        let photoCardEls = [];
+
+        // Khởi tạo Album ảnh xếp chồng
+        function initPhotoStack() {
+            const viewport = document.getElementById('photoStackViewport');
+            const dotsContainer = document.getElementById('stackDots');
+            if (!viewport || !dotsContainer) return;
+
+            viewport.innerHTML = '';
+            dotsContainer.innerHTML = '';
+            photoCardEls = [];
+
+            albumPhotos.forEach((item, idx) => {
+                // Tạo thẻ ảnh
+                const card = document.createElement('div');
+                card.className = 'photo-stack-card';
+                card.innerHTML = `
+                    <img src="${item.src}" alt="Ảnh lớp 12/4" draggable="false"
+                         onerror="this.onerror=null; this.src='https://placehold.co/800x600/fdfbf7/8b0000?text=12%2F4+%26+C%C3%B4+H%E1%BA%A3i';">
+                    <span class="absolute top-2.5 right-2.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-waxRed/85 text-amber-100 border border-amber-200/40 backdrop-blur-sm shadow">
+                        ${idx + 1} / ${albumPhotos.length}
+                    </span>
+                    <div class="photo-emotion-overlay">
+                        <p class="font-letter italic text-sm sm:text-base font-semibold leading-snug drop-shadow">
+                            "${item.emotion}"
+                        </p>
+                    </div>
+                `;
+
+                // Bấm vào tấm ảnh lấp ló phía sau để kéo đè lên trên
+                card.addEventListener('click', () => {
+                    if (idx !== photoIndex && !isPhotoAnimating) {
+                        goToPhotoSlide(idx, 'next');
+                    }
+                });
+
+                viewport.appendChild(card);
+                photoCardEls.push(card);
+
+                // Tạo dot điều hướng
+                const dot = document.createElement('button');
+                dot.type = 'button';
+                dot.className = 'h-2 rounded-full transition-all duration-300 ' + (idx === 0 ? 'w-6 bg-waxRed' : 'w-2 bg-rose-900/25 hover:bg-rose-900/50');
+                dot.ariaLabel = `Ảnh ${idx + 1}`;
+                dot.addEventListener('click', () => {
+                    if (idx !== photoIndex && !isPhotoAnimating) {
+                        const dir = idx > photoIndex ? 'next' : 'prev';
+                        goToPhotoSlide(idx, dir);
+                    }
+                });
+                dotsContainer.appendChild(dot);
+            });
+
+            renderPhotoStackClasses();
+            bindPhotoSwipeGestures(viewport);
+        }
+
+        // Cập nhật vị trí các lớp ảnh xếp chồng
+        function renderPhotoStackClasses(incomingIdx = -1, direction = 'next') {
+            const total = albumPhotos.length;
+
+            photoCardEls.forEach((card, i) => {
+                card.classList.remove('is-active', 'is-incoming', 'is-incoming-left', 'is-next-1', 'is-next-2', 'is-hidden');
+
+                if (i === incomingIdx) {
+                    card.classList.add(direction === 'prev' ? 'is-incoming-left' : 'is-incoming');
+                    return;
+                }
+
+                const diff = (i - photoIndex + total) % total;
+                if (diff === 0) {
+                    card.classList.add('is-active');
+                } else if (diff === 1) {
+                    card.classList.add('is-next-1');
+                } else if (diff === 2) {
+                    card.classList.add('is-next-2');
+                } else {
+                    card.classList.add('is-hidden');
+                }
+            });
+
+            // Cập nhật dots
+            const dots = document.querySelectorAll('#stackDots button');
+            dots.forEach((dot, i) => {
+                if (i === photoIndex) {
+                    dot.className = 'h-2 w-6 rounded-full bg-waxRed transition-all duration-300';
+                } else {
+                    dot.className = 'h-2 w-2 rounded-full bg-rose-900/25 hover:bg-rose-900/50 transition-all duration-300';
+                }
+            });
+        }
+
+        // Chuyển ảnh với hiệu ứng tấm mới trượt đè lên tấm cũ
+        function goToPhotoSlide(targetIdx, direction = 'next') {
+            const total = albumPhotos.length;
+            const nextIdx = (targetIdx + total) % total;
+            if (nextIdx === photoIndex || isPhotoAnimating) return;
+
+            isPhotoAnimating = true;
+            const incomingCard = photoCardEls[nextIdx];
+
+            // Đặt thẻ sắp tới ở vị trí chờ ngoài khung hình với z-index cao hơn thẻ hiện tại
+            incomingCard.style.transition = 'none';
+            incomingCard.classList.remove('is-active', 'is-next-1', 'is-next-2', 'is-hidden', 'is-incoming', 'is-incoming-left');
+            incomingCard.classList.add(direction === 'prev' ? 'is-incoming-left' : 'is-incoming');
+
+            // Force reflow
+            void incomingCard.offsetWidth;
+
+            // Bật lại transition và cho trượt đè lên trên
+            incomingCard.style.transition = '';
+            photoIndex = nextIdx;
+            renderPhotoStackClasses();
+
+            setTimeout(() => {
+                isPhotoAnimating = false;
+            }, 650);
+        }
+
+        function nextPhotoSlide() {
+            goToPhotoSlide(photoIndex + 1, 'next');
+        }
+
+        function prevPhotoSlide() {
+            goToPhotoSlide(photoIndex - 1, 'prev');
+        }
+
+        // Hỗ trợ vuốt cảm ứng & kéo chuột trên khung ảnh
+        function bindPhotoSwipeGestures(el) {
+            let startX = 0;
+            let isDragging = false;
+
+            const onStart = (x) => {
+                startX = x;
+                isDragging = true;
+            };
+
+            const onEnd = (endX) => {
+                if (!isDragging) return;
+                isDragging = false;
+                const deltaX = endX - startX;
+                if (Math.abs(deltaX) > 40) {
+                    if (deltaX < 0) nextPhotoSlide();
+                    else prevPhotoSlide();
+                }
+            };
+
+            el.addEventListener('touchstart', (e) => onStart(e.touches[0].clientX), { passive: true });
+            el.addEventListener('touchend', (e) => onEnd(e.changedTouches[0].clientX));
+            el.addEventListener('mousedown', (e) => onStart(e.clientX));
+            window.addEventListener('mouseup', (e) => { if (isDragging) onEnd(e.clientX); });
+        }
+
+        // Điều khiển phím mũi tên khi đang ở Slide Album ảnh (slide8)
+        document.addEventListener('keydown', (e) => {
+            if (currentSlide === 8) {
+                if (e.key === 'ArrowRight') nextPhotoSlide();
+                if (e.key === 'ArrowLeft') prevPhotoSlide();
+            }
+        });
+
+        // ========================================================
+        // ĐIỀU HƯỚNG CÁC SLIDE CHÍNH CỦA THIỆP
+        // ========================================================
         function goToSlide(slideNum) {
             // Tự động phát nhạc khi mở bìa thư (Slide 1 sang 2)
             if (slideNum === 2 && !isPlaying) {
                 playAudio();
             }
 
-            const slideIds = [1, 2, 3, 5, 6, 7];
+            const slideIds = [1, 2, 3, 5, 6, 7, 8];
             slideIds.forEach(i => {
                 const slide = document.getElementById(`slide${i}`);
                 if (slide) {
@@ -394,6 +729,9 @@
                 }, i * 150);
             }
         }
+
+        // Khởi tạo album ngay khi tải trang
+        document.addEventListener('DOMContentLoaded', initPhotoStack);
     </script>
 </body>
 </html>
